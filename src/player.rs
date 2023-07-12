@@ -1,7 +1,7 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
-pub const PLAYER_SPEED: f32 = 500.0;
-pub const PLAYER_SIZE: f32 = 64.0;
+pub const SPEED: f32 = 500.0;
+pub const SIZE: f32 = 64.0;
 
 pub struct PlayerPlugin;
 
@@ -57,7 +57,7 @@ pub fn r#move(
     direction = direction.normalize_or_zero();
 
     // Modify the player's position based on the direction vector
-    transform.translation += direction * PLAYER_SPEED * time.delta_seconds();
+    transform.translation += direction * SPEED * time.delta_seconds();
 }
 
 pub fn confine_movement(
@@ -71,7 +71,7 @@ pub fn confine_movement(
     let window_size = [window.width(), window.height()];
 
     // Calculate the min and max x and y values that the player can be at
-    let [x_cap, y_cap] = crate::cap::calc_cap(window_size, [PLAYER_SIZE, PLAYER_SIZE]);
+    let [x_cap, y_cap] = crate::cap::calc_cap(window_size, [SIZE, SIZE]);
 
     // Cap the player's x and y values
     let x_capped = x_cap.apply(transform.translation.x);
