@@ -16,6 +16,23 @@ impl Cap {
     pub fn apply(&self, value: f32) -> f32 {
         value.min(self.max).max(self.min)
     }
+
+    /// Tests a value against the min and max values.
+    ///
+    /// # Returns
+    ///
+    /// * `std::cmp::Ordering::Less` if the value is less than the min value.
+    /// * `std::cmp::Ordering::Greater` if the value is greater than the max value.
+    /// * `std::cmp::Ordering::Equal` if the value is between the min and max values (inclusive).
+    pub fn test(&self, value: f32) -> std::cmp::Ordering {
+        if value < self.min {
+            std::cmp::Ordering::Less
+        } else if value > self.max {
+            std::cmp::Ordering::Greater
+        } else {
+            std::cmp::Ordering::Equal
+        }
+    }
 }
 
 /// Calculates the bounds for a sprite in a window.
