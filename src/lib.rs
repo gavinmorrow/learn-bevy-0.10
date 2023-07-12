@@ -1,15 +1,15 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
 mod cap;
+mod enemy;
 mod player;
 
 pub fn start_app() {
     App::new()
         .add_plugins(DefaultPlugins)
+        .add_plugin(player::PlayerPlugin)
+        .add_plugin(enemy::EnemyPlugin)
         .add_startup_system(spawn_camera)
-        .add_startup_system(player::spawn)
-        .add_system(player::r#move)
-        .add_system(player::confine_movement)
         .run();
 }
 

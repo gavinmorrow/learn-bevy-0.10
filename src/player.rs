@@ -3,6 +3,16 @@ use bevy::{prelude::*, window::PrimaryWindow};
 pub const PLAYER_SPEED: f32 = 500.0;
 pub const PLAYER_SIZE: f32 = 64.0;
 
+pub struct PlayerPlugin;
+
+impl Plugin for PlayerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_startup_system(spawn)
+            .add_system(r#move)
+            .add_system(confine_movement);
+    }
+}
+
 #[derive(Component)]
 pub struct Player;
 
