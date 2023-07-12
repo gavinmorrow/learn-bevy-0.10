@@ -1,5 +1,6 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 
+mod cap;
 mod player;
 
 pub fn start_app() {
