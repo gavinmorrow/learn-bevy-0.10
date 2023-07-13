@@ -1,6 +1,8 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::random;
 
+use crate::random_spawn;
+
 pub const NUM_ENEMIES: usize = 4;
 pub const SIZE: f32 = 64.0;
 pub const SPEED: f32 = 200.0;
@@ -16,60 +18,34 @@ impl Plugin for EnemyPlugin {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Clone, Copy)]
 pub struct Enemy {
     pub direction: Vec2,
 }
 
 pub fn spawn(
-    mut commands: Commands,
+    commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
 ) {
-    let window = window_query.single();
+    // Generate an array of enemies
+    let mut enemies = [Enemy {
+        direction: Vec2::ZERO,
+    }; NUM_ENEMIES];
 
-    for _ in 0..NUM_ENEMIES {
-        let (x, y) = gen_random_pos(window.width(), window.height());
-
-        commands.spawn((
-            SpriteBundle {
-                transform: Transform::from_xyz(x, y, 0.0),
-                texture: asset_server.load("sprites/ball_red_large.png"),
-                ..default()
-            },
-            Enemy {
-                direction: Vec2::new(random(), random()).normalize(),
-            },
-        ));
+    // Give each one a random direction
+    for enemy in enemies.iter_mut() {
+        enemy.direction = Vec2::new(random::<f32>() - 0.5, random::<f32>() - 0.5).normalize();
     }
-}
 
-/// Generate a random position for the enemy.
-///
-/// # Arguments
-///
-/// * `width` - The width of the window.
-/// * `height` - The height of the window.
-///
-/// # Returns
-///
-/// A tuple containing the x and y coordinates of the enemy (in that order).
-fn gen_random_pos(width: f32, height: f32) -> (f32, f32) {
-    // Generate a random position for the enemy
-    //
-    // The buffer ensures that the enemy is spawned at least half its size away from the edge
-    // of the screen.
-    //
-    // Otherwise, it could spawn halfway off the screen, causing it to get stuck there (due to
-    // the `update_direction` system).
-    //
-    // Technically the buffer code could be removed (the `confine_movement` system would take care
-    // of it), but then the random generation is biased towards spawning at the edge.
-    let buffer = SIZE / 2.0;
-    let x = buffer + random::<f32>() * (width - SIZE);
-    let y = buffer + random::<f32>() * (height - SIZE);
-
-    (x, y)
+    random_spawn::spawn(
+        commands,
+        window_query,
+        asset_server,
+        "sprites/ball_red_large.png",
+        enemies,
+        SIZE,
+    );
 }
 
 pub fn r#move(mut enemy_query: Query<(&mut Transform, &Enemy)>, time: Res<Time>) {

@@ -5,6 +5,7 @@ use player::Player;
 mod cap;
 mod enemy;
 mod player;
+mod random_spawn;
 mod star;
 
 pub fn start_app() {
