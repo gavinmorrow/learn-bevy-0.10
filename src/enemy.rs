@@ -129,24 +129,29 @@ fn play_sound(audio: &Res<Audio>, asset_server: &Res<AssetServer>) {
 
 // FIXME: this is copy-pasted from the player's code
 // (literally the only difference is the variable names and the type of the query)
+// oh and ig the for loop
+//
+// Also, theoretically, this should not be necessary, as the `update_direction` system should take
+// care of it. It doesn't because it's possible for the ordering to go:
+// `update_direction` -> `r#move` -> (next frame) `r#move` -> `update_direction`
 pub fn confine_movement(
     mut enemy_query: Query<&mut Transform, With<Enemy>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
-    let Ok(mut transform) = enemy_query.get_single_mut() else { return; };
+    for mut transform in enemy_query.iter_mut() {
+        // Get window dimensions
+        let window = window_query.single();
+        let window_size = [window.width(), window.height()];
 
-    // Get window dimensions
-    let window = window_query.single();
-    let window_size = [window.width(), window.height()];
+        // Calculate the min and max x and y values that the enemy can be at
+        let [x_cap, y_cap] = crate::cap::calc_cap(window_size, [SIZE, SIZE]);
 
-    // Calculate the min and max x and y values that the enemy can be at
-    let [x_cap, y_cap] = crate::cap::calc_cap(window_size, [SIZE, SIZE]);
+        // Cap the enemy's x and y values
+        let x_capped = x_cap.apply(transform.translation.x);
+        let y_capped = y_cap.apply(transform.translation.y);
 
-    // Cap the enemy's x and y values
-    let x_capped = x_cap.apply(transform.translation.x);
-    let y_capped = y_cap.apply(transform.translation.y);
-
-    // Update the enemy's position with the capped values
-    transform.translation.x = x_capped;
-    transform.translation.y = y_capped;
+        // Update the enemy's position with the capped values
+        transform.translation.x = x_capped;
+        transform.translation.y = y_capped;
+    }
 }
