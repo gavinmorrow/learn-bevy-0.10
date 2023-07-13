@@ -5,12 +5,14 @@ use player::Player;
 mod cap;
 mod enemy;
 mod player;
+mod star;
 
 pub fn start_app() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(player::PlayerPlugin)
         .add_plugin(enemy::EnemyPlugin)
+        .add_plugin(star::StarPlugin)
         .add_startup_system(spawn_camera)
         .add_system(check_player_enemy_collision)
         .run();
