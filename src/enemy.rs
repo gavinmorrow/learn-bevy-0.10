@@ -1,5 +1,5 @@
 use bevy::{prelude::*, window::PrimaryWindow};
-use rand::prelude::*;
+use rand::random;
 
 pub const NUM_ENEMIES: usize = 4;
 pub const SIZE: f32 = 64.0;
